@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Add New Box</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="box_name">Box Name</label>
+            <input type="text" class="form-control" id="box_name" name="box_name" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="location">Location</label>
+            <input type="text" class="form-control" id="location" name="location">
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Add Box</button>
+    </form>
+</div>
+{% endblock %}

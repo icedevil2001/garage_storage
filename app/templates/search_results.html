@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Search Results for "{{ query }}"</h2>
+    
+    {% if results %}
+        <div class="row">
+            {% for item in results %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            {% if item.image_path %}
+                            <img src="{{ url_for('static', filename=item.image_path) }}" 
+                                 class="img-fluid rounded-start" alt="{{ item.name }}">
+                            {% else %}
+                            <div class="text-center p-3 bg-light">No Image</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ item.name }}</h5>
+                                <p class="card-text">{{ item.description }}</p>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        Container: {{ item.box.name }}<br>
+                                        Location: {{ item.box.location or 'Not specified' }}
+                                    </small>
+                                </p>
+                                <a href="{{ url_for('main.view_box', box_id=item.box_id) }}" 
+                                   class="btn btn-sm btn-primary">View Box</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No items found matching your search.</p>
+    {% endif %}
+</div>
+{% endblock %}
