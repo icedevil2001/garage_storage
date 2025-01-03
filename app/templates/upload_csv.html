@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Upload CSV File</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.csv_file.label }}
+            {{ form.csv_file(class="form-control") }}
+        </div>
+        {{ form.submit(class="btn btn-primary mt-3") }}
+    </form>
+    <a href="{{ url_for('download_template') }}" class="btn btn-secondary btn-sm mt-3">Download Template</a>
+</div>
+{% endblock %}

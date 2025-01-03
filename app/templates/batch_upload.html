@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Batch Upload</h1>
+    <form action="{{ url_for('main.batch_upload') }}" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="file" class="form-label">Select file</label>
+            <input class="form-control" type="file" id="file" name="file" accept=".csv, .tsv, .xls, .xlsx" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+    <a href="{{ url_for('main.download_csv_template') }}" class="btn btn-secondary btn-sm mt-3">Download Template</a>
+
+</div>
+{% endblock %}

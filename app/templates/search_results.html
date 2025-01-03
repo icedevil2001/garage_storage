@@ -23,6 +23,7 @@
                                 <h5 class="card-title">{{ item.name }}</h5>
                                 <p class="card-text">{{ item.description }}</p>
                                 <p class="card-text">
+                                    <h6> QR code: {{ item.box.id }}</h6>
                                     <small class="text-muted">
                                         Container: {{ item.box.name }}<br>
                                         Location: {{ item.box.location or 'Not specified' }}

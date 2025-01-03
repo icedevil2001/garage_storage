@@ -1,0 +1,13 @@
+
+
+image_classification:
+  model: "gemini-2.0.flash-exp"
+  temperature: 0.5
+  # system_intructions: | 
+  #   return bounding boxes as a JSON array with labels. Never return masks or code fencing. Limit to 25 objects.
+  #   If an object is present multiple times, name them according to their unique characteristic (colors, size, position, unique characteristics, etc..).
+  #   Output a json list where each entry contains the 2D bounding box in "box_2d" and a text label in "label".
+  
+  system_message: | 
+    Return bounding boxes as a JSON array with labels. Never return masks or code fencing. Limit to 25 objects. Output a JSON list where each entry contains the 2D bounding box in "box_2d" and a text label in "label".
+  prompt: "Identify the objects in the image."

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Classify Items in Box</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.box_name.label }}
+            {{ form.box_name(class="form-control form-select") }}
+            <!-- <select class="form-control form-select" id="box_name" name="box_name">
+                <option value="" disabled selected>Select a box</option>
+                {% for box in boxes %}
+                    <option value="{{ box.id }}">{{ box.name }}</option>
+                {% endfor %}
+            </select>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+            <script>
+                $(document).ready(function() {
+                    $('#box_name').select2({
+                        placeholder: "Select a box",
+                        allowClear: true
+                    });
+                });
+            </script> -->
+            {{ form.image.label }}
+            {{ form.image(class="form-control") }}
+        </div>
+        {{ form.submit(class="btn btn-primary mt-3") }}
+    </form>
+</div>
+{% endblock %}

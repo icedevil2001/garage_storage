@@ -1,0 +1,15 @@
+# ToDo
+- [ ] Add a `README.md` file to the project
+- [ ] Add a `LICENSE` file to the project
+- [ ] Add a search bar to find containers by name
+- [ ] Display QRcodeID in search results
+- [ ] Paginate search results (fuzzy search by description, location, container name, QRcodeID, and item name)
+- [ ] Make the container name optional if not provided (generate a random name)
+- [ ] Add the box name under the QR code image
+- [ ] Make location a dropdown list and allow adding a new location
+- [ ] Batch update container QRcodeID
+- [ ] Allow uploading CSV/TSV/XLSX templates for container items
+- [ ] Use the Gemini image model to segment items in a box and allow manual edits before submitting
+- [ ] make the container name a hyperlink to the container detail page
+- [ ] Reduce the image size of the items
+- [ ] Add image of the container to main/index page 

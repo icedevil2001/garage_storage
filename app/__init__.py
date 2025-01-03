@@ -4,18 +4,22 @@ from . import models
 from .routes import main
 import os
 from .config import Config
+from pathlib import Path
 
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'your-secret-key'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///garage_storage.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['UPLOAD_FOLDER'] = os.path.join('app', 'static', 'uploads')
-    app.config['QR_FOLDER'] = os.path.join('app', 'static', 'qr_codes')
+    app.config['UPLOAD_FOLDER'] = Path('app') / 'static' / 'uploads'
+    app.config['THUMBNAIL_FOLDER'] = Path('app') / 'static' / 'uploads' /'thumbnails'
+    app.config['QR_FOLDER'] = Path('app') / 'static' /'qr_codes' 
+
 
     # Ensure upload directories exist
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    os.makedirs(app.config['QR_FOLDER'], exist_ok=True)
+    app.config['UPLOAD_FOLDER'].mkdir( exist_ok=True)
+    app.config['QR_FOLDER'].mkdir(exist_ok=True)
+    app.config['THUMBNAIL_FOLDER'].mkdir( exist_ok=True)
 
     db.init_app(app)
     

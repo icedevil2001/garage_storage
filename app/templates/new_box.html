@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container mt-4">
     <h2>Create New Box</h2>
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {{ form.csrf_token }}
         <div class="form-group mb-3">
             <label for="name">{{ form.name.label }}</label>
@@ -20,11 +20,31 @@
             <label for="description">{{ form.description.label }}</label>
             {{ form.description(class="form-control") }}
         </div>
-        <div class="form-group mb-3">
+        <div class="form-row mb-3">
+            <div class="col">
             <label for="location">{{ form.location.label }}</label>
-            {{ form.location(class="form-control") }}
+            {{ form.location(class="form-control form-select", list="location-options", id="location-list") }}
+            <datalist id="location-options">
+                {% for location in locations %}
+                <option value="{{ location }}"></option>
+                {% endfor %}
+            </datalist>
+            <small class="form-text text-muted">If the location does not exist. Use new location to add it</small>
+            </div>
+            <div class="col">
+            <label for="new_location">{{ form.new_location.label }}</label>
+            {{ form.new_location(class="form-control") }}
+            <small class="form-text text-muted">Enter a new location if it is not listed above.</small>
+            </div>
+        </div>
+        </div>
+        <div class="form-group mb-3">
+            <label for="image">{{ form.box_image.label }}</label>
+            {{ form.box_image(class="form-control-file") }}
+            <small class="form-text text-muted">If no image is uploaded, a default image will be used.</small>
         </div>
         <button type="submit" class="btn btn-primary">Create Box</button>
     </form>
 </div>
 {% endblock %}
+

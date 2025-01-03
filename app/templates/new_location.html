@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Create New Location</h2>
+    <form method="POST">
+        {{ form.csrf_token }}
+        <div class="form-group mb-3">
+            <label for="location">{{ form.location.label }}</label>
+            {{ form.location(class="form-control") }}
+            {% if form.location.errors %}
+            <div class="alert alert-danger">
+                {% for error in form.location.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="form-group mb-3">
+            <label for="description">{{ form.description.label }}</label>
+            {{ form.description(class="form-control") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Create Location</button>
+    </form>
+</div>
+{% endblock %}

@@ -6,20 +6,21 @@
     <a href="{{ url_for('main.new_box') }}" class="btn btn-primary">Add New Box</a>
 </div>
 
-<div class="row">
+<!-- List boxes  -->
+<div class="list-group">
     {% for box in boxes %}
-    <div class="col-md-4 mb-4">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">{{ box.name }}</h5>
-                <p class="card-text">{{ box.description }}</p>
-                {% if box.qr_code %}
-                <a href="{{ url_for('main.view_box', box_id=box.id) }}"></a>
-                    <img src="{{ url_for('static', filename=box.qr_code) }}" alt="QR Code" class="img-fluid mb-2" style="max-width: 150px;">
-                </a>
-                {% endif %}
-                <a href="{{ url_for('main.view_box', box_id=box.id) }}" class="btn btn-info">View Contents</a>
+    <div class="list-group-item mb-4">
+        <div class="d-flex align-items-center" onclick='window.location="{{ url_for('main.view_box', box_id=box.id) }}"'>
+            {% if box.qr_code %}
+            <img src="{{ url_for('static', filename=box.box_image) }}" alt="Box Image" class="img-fluid mr-3" style="max-width: 100px; padding: 3px;">
+            <div>
+            <h3 class="mb-1">{{ box.name }}</h3>
+            <h5 class="mb-1">{{ box.qr_code_id }}</h5>
+            <p class="mb-1">Description: {{ box.description }}</p>
+            <p class="mb-1">Location: {{ box.location }}</p>
+            <!-- <a href="{{ url_for('main.view_box', box_id=box.id) }}" class="text-decoration-none">View Details</a> -->
             </div>
+            {% endif %}
         </div>
     </div>
     {% endfor %}

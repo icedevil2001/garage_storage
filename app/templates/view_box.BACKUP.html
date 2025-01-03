@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
@@ -8,51 +9,39 @@
     </div>
 </div>
 
-<div class="text-center mb-4 qr-code-container">
-    <a href="#" data-bs-toggle="modal" data-bs-target="#boxImageModal">
-        <img src="{{ url_for('static', filename=box.box_image) }}" alt="Box Image" class="img-fluid item-image" style="max-width: 100px; cursor: pointer;">
-    </a>
-    <div class="mt-3">
-        <a href="{{ url_for('main.download_qr', qr_code_id=box.qr_code_id) }}" class="btn btn-primary" aria-label="Download QR code for {{ box.name }}">Download QR Code</a>
-    </div>
-</div>
-
-<!-- Modal for box image -->
-<div class="modal fade" id="boxImageModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Box Image</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center">
-                <img src="{{ url_for('static', filename=box.box_image) }}" class="img-fluid" alt="{{ box.name }}">
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="text-center mb-4">
+<div class="d-flex justify-content-end mb-4">
     <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
         <a class="btn btn-primary" href="{{ url_for('main.new_item', box_id=box.id) }}">Add item</a>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#aiModal">Use AI</button>
         <div class="btn-group" role="group">
             <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                Actions
+              Actions
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{{ url_for('main.edit_box', box_id=box.id) }}">Edit Box</a></li>
-                <li>
-                    <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteBoxModal">
-                        <i class="bi bi-trash"></i> Delete Box
-                    </button>
-                </li>
+              <li><a class="dropdown-item" href="{{ url_for('main.edit_box', box_id=box.id) }}">Edit Box</a></li>
+              <li>
+                  <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteBoxModal">
+                  <i class="bi bi-trash"></i> Delete Box
+                  </button>
+              </li>
             </ul>
         </div>
     </div>
 </div>
 
 <div>
+
+    <p class="lead">{{ box.description }}</p>
+
+    {% if box.qr_code %}
+    <div class="text-center mb-4 qr-code-container">
+        <img src="{{ url_for('static', filename=box.box_image) }}" alt="Box QR Code" class="img-fluid" style="max-width: 200px;">
+        <div class="mt-3">
+            <a href="{{ url_for('main.download_qr', qr_code_id=box.qr_code_id) }}" class="btn btn-primary" aria-label="Download QR code for {{ box.name }}">Download QR Code</a>
+        </div>
+    </div>
+    {% endif %}
+
     <h2 class="mb-4">Items in Box</h2>
     <table class="table table-striped">
         <thead>
@@ -89,7 +78,7 @@
                 <td class="align-middle">{{ item.name }}</td>
                 <td class="align-middle">{{ item.description }}</td>
                 <td class="align-middle">
-                    <div class="d-flex gap-2 justify-content-center">
+                    <div class="d-flex gap-2 justify-content-center"></div>
                         <a href="{{ url_for('main.edit_item', item_id=item.id) }}" class="btn btn-outline-warning">Edit</a>
                         <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteItemModal{{ item.id }}">
                             Delete
@@ -97,6 +86,27 @@
                     </div>
                 </td>
             </tr>
+
+            <!-- Delete Item Modal -->
+            <div class="modal fade" id="deleteItemModal{{ item.id }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Item</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete "{{ item.name }}"?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <form action="{{ url_for('main.delete_item', item_id=item.id) }}" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-outline-danger">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endfor %}
         </tbody>
     </table>
@@ -123,29 +133,6 @@
     </div>
 </div>
 
-<!-- Delete Item Modals -->
-{% for item in box.items %}
-<div class="modal fade" id="deleteItemModal{{ item.id }}" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Delete Item</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to delete "{{ item.name }}"?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form action="{{ url_for('main.delete_item', item_id=item.id) }}" method="POST" style="display: inline;">
-                    <button type="submit" class="btn btn-outline-danger">Delete</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-{% endfor %}
-
 <!-- Delete Box Modal -->
 <div class="modal fade" id="deleteBoxModal" tabindex="-1">
     <div class="modal-dialog">
@@ -167,3 +154,4 @@
     </div>
 </div>
 {% endblock %}
+
