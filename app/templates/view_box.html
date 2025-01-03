@@ -1,31 +1,40 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="container">
     <div class="row align-items-center mb-4">
         <div class="col-md-6">
             <h1 class="display-5 fw-bold">{{ box.name }}</h1>
         </div>
-        <div class="col-md-6">
-            <div class="d-flex gap-2 justify-content-md-end flex-wrap">
-                <a href="{{ url_for('main.edit_box', box_id=box.id) }}" class="btn btn-warning">
-                    <i class="bi bi-pencil"></i> Edit Box
-                </a>
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteBoxModal">
-                    <i class="bi bi-trash"></i> Delete Box
-                </button>
-                <a href="{{ url_for('main.new_item', box_id=box.id) }}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg"></i> Add Item
-                </a>
-            </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end mb-4">
+    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+        <a class="btn btn-primary" href="{{ url_for('main.new_item', box_id=box.id) }}">Add item</a>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#aiModal">Use AI</button>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              Actions
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{{ url_for('main.edit_box', box_id=box.id) }}">Edit Box</a></li>
+              <li>
+                  <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteBoxModal">
+                  <i class="bi bi-trash"></i> Delete Box
+                  </button>
+              </li>
+            </ul>
         </div>
     </div>
+</div>
+
+<div>
 
     <p class="lead">{{ box.description }}</p>
 
     {% if box.qr_code %}
     <div class="text-center mb-4 qr-code-container">
-        <img src="{{ url_for('static', filename=box.qr_code) }}" alt="Box QR Code" class="img-fluid" style="max-width: 200px;">
+        <img src="{{ url_for('static', filename=box.box_image) }}" alt="Box QR Code" class="img-fluid" style="max-width: 200px;">
         <div class="mt-3">
             <a href="{{ url_for('main.download_qr', qr_code_id=box.qr_code_id) }}" class="btn btn-primary" aria-label="Download QR code for {{ box.name }}">Download QR Code</a>
         </div>
@@ -33,47 +42,93 @@
     {% endif %}
 
     <h2 class="mb-4">Items in Box</h2>
-    <div class="row g-4 mt-4">
-        {% for item in box.items %}
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card h-100">
-                {% if item.image_path %}
-                <img src="{{ url_for('static', filename=item.image_path) }}" class="card-img-top" alt="{{ item.name }}">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ item.name }}</h5>
-                    <p class="card-text">{{ item.description }}</p>
-                    <div class="d-flex gap-2 mt-auto">
-                        <a href="{{ url_for('main.edit_item', item_id=item.id) }}" class="btn btn-warning flex-grow-1">Edit</a>
-                        <button type="button" class="btn btn-danger flex-grow-1" data-bs-toggle="modal" data-bs-target="#deleteItemModal{{ item.id }}">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Image</th>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in box.items %}
+            <tr>
+                <td class="align-middle">
+                    {% if item.image_path %}
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal{{ item.id }}">
+                        <img src="{{ url_for('static', filename=item.image_path) }}" class="img-fluid item-image" alt="{{ item.name }}" style="max-width: 50px;">
+                    </a>
+                    <div class="modal fade" id="imageModal{{ item.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">{{ item.name }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <img src="{{ url_for('static', filename=item.image_path) }}" class="img-fluid" alt="{{ item.name }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </td>
+                <td class="align-middle">{{ item.name }}</td>
+                <td class="align-middle">{{ item.description }}</td>
+                <td class="align-middle">
+                    <div class="d-flex gap-2 justify-content-center"></div>
+                        <a href="{{ url_for('main.edit_item', item_id=item.id) }}" class="btn btn-outline-warning">Edit</a>
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteItemModal{{ item.id }}">
                             Delete
                         </button>
                     </div>
-                </div>
-            </div>
-        </div>
+                </td>
+            </tr>
 
-        <!-- Delete Item Modal -->
-        <div class="modal fade" id="deleteItemModal{{ item.id }}" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Delete Item</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to delete "{{ item.name }}"?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <form action="{{ url_for('main.delete_item', item_id=item.id) }}" method="POST" style="display: inline;">
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
+            <!-- Delete Item Modal -->
+            <div class="modal fade" id="deleteItemModal{{ item.id }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Item</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete "{{ item.name }}"?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <form action="{{ url_for('main.delete_item', item_id=item.id) }}" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-outline-danger">Delete</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- AI Modal -->
+<div class="modal fade" id="aiModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">AI Classification</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('main.ai_classification', box_id=box.id) }}" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Upload Image</label>
+                        <input class="form-control" type="file" id="image" name="image" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Classify</button>
+                </form>
+            </div>
         </div>
-        {% endfor %}
     </div>
 </div>
 
@@ -91,7 +146,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <form action="{{ url_for('main.delete_box', box_id=box.id) }}" method="POST">
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="submit" class="btn btn-outline-danger">Delete</button>
                 </form>
             </div>
         </div>
