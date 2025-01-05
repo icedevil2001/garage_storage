@@ -32,28 +32,30 @@
     </div>
 </div>
 
-<div class="text-center mb-4">
-    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-        <a class="btn btn-primary" href="{{ url_for('main.new_item', box_id=box.id) }}">Add item</a>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#aiModal">Use AI</button>
-        <div class="btn-group" role="group">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                Actions
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{{ url_for('main.edit_box', box_id=box.id) }}">Edit Box</a></li>
-                <li>
-                    <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteBoxModal">
-                        <i class="bi bi-trash"></i> Delete Box
-                    </button>
-                </li>
-            </ul>
-        </div>
-    </div>
-</div>
+
 
 <div>
-    <h2 class="mb-4">Items in Box</h2>
+    <h2 class="mb-4 d-inline-block">Items in Box</h2>
+    <div class="text-right mb-4 d-inline-block float-end">
+        <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+            <a class="btn btn-primary" href="{{ url_for('main.new_item', box_id=box.id) }}">Add item</a>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#aiModal">Use AI</button>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Actions
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{{ url_for('main.edit_box', box_id=box.id) }}">Edit Box</a></li>
+                    <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteBoxModal">
+                            <i class="bi bi-trash"></i> Delete Box
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <table class="table table-striped">
         <thead>
             <tr>

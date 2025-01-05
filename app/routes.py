@@ -4,7 +4,11 @@ from werkzeug.utils import secure_filename
 from .extensions import db
 from .models import Box, Item
 from .forms import BoxForm, ItemForm, BoxImageForm, SearchForm
-from .utils import generate_qr_code, generate_qr_id, export_to_csv, resize_image, sequential_qr_id, image_hash, save_image_with_hash
+from .utils import (
+    generate_qr_code, generate_qr_id, export_to_csv, 
+    resize_image, sequential_qr_id, image_hash, 
+    save_image_with_hash, safe_delete_file
+)
 from datetime import datetime
 from pathlib import Path
 import pandas as pd
@@ -66,15 +70,8 @@ def new_box():
                 file_path = Path(current_app.config['UPLOAD_FOLDER']) / filename
                 file.save(file_path)
                 file_path = save_image_with_hash(file_path) # Save image with hash and resize
-                # filepath = Path(current_app.config['UPLOAD_FOLDER']) / filename
-                # file.save(filepath)
-                # img = resize_image(filepath)
-                # img.save(filepath) # Overwrite the original image with resized image
-                # # thumbnail = resize_image(filepath, (128, 128))
-                # img.thumbnail((128, 128))
-                # img.save(Path(current_app.config['THUMBNAIL_FOLDER']) / filename)
-                # # item.image_path = f'uploads/{filename}'
-                box.box_image = str(current_app.config['UPLOAD_FOLDER'].relative_to(current_app.config['UPLOAD_FOLDER'].parents[0]) / filename)
+    
+                box.box_image = str(current_app.config['UPLOAD_FOLDER'].relative_to(current_app.config['UPLOAD_FOLDER'].parents[0]) / file_path.name)
         else:
             box.box_image = 'assets/Box.png'
 
@@ -114,7 +111,7 @@ def add_box():
 
 @main.route('/box/<string:box_id>')
 def view_box(box_id):
-    box = Box.query.get_or_404(box_id)
+    box = Box.query.order_by(Item.created_at.desc()).get_or_404(box_id)
     return render_template('view_box.html', box=box)
 
 @main.route('/box/<string:box_id>/item/new', methods=['GET', 'POST'])
@@ -135,16 +132,12 @@ def new_item(box_id):
                 file_path = Path(current_app.config['UPLOAD_FOLDER']) / filename
                 file.save(file_path)
                 file_path = save_image_with_hash(file_path) # Save image with hash and resize
-                # filepath = Path(current_app.config['UPLOAD_FOLDER']) / filename
-                # file.save(filepath)
-                # img = resize_image(filepath)
-                # img.save(filepath) # Overwrite the original image with resized image
 
-                # img.thumbnail((128, 128))
-                # img.save(Path(current_app.config['THUMBNAIL_FOLDER']) / filename)
+                item.image_path = str(current_app.config['UPLOAD_FOLDER'].relative_to(current_app.config['UPLOAD_FOLDER'].parents[0]) / file_path.name)
+            else:
+                item.image_path = 'assets/Box_with_items.png'
 
-                item.image_path = str(current_app.config['UPLOAD_FOLDER'].relative_to(current_app.config['UPLOAD_FOLDER'].parents[0]) / filename)
-        
+        app.logger.info(f"New Item added: {item}")
         db.session.add(item)
         db.session.commit()
         return redirect(url_for('main.view_box', box_id=box_id))
@@ -159,10 +152,19 @@ def edit_box(box_id):
     if form.validate_on_submit():
         box.name = form.name.data
         box.description = form.description.data
+        box.location = form.location.data
+        if form.box_image.data:
+            file = form.box_image.data
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file_path = Path(current_app.config['UPLOAD_FOLDER']) / filename
+                file.save(file_path)
+                file_path = save_image_with_hash(file_path)
+                box.box_image = str(current_app.config['UPLOAD_FOLDER'].relative_to(current_app.config['UPLOAD_FOLDER'].parents[0]) / file_path.name)
         db.session.commit()
         return redirect(url_for('main.view_box', box_id=box.id))
     
-    return render_template('edit_box.html', form=form, box=box)
+    return render_template('new_box.html', form=form, box=box)
 
 @main.route('/box/<string:box_id>/delete', methods=['POST'])
 def delete_box(box_id):
@@ -172,14 +174,16 @@ def delete_box(box_id):
     if box.qr_code:
         qr_path = root_path / 'static' / box.qr_code
         if os.path.exists(qr_path):
-            os.remove(qr_path)
+            # os.remove(qr_path)
+            safe_delete_file(qr_path)
     
     # Delete associated item images
     for item in box.items:
         if item.image_path:
             image_path = root_path /'static' / item.image_path
             if os.path.exists(image_path):
-                os.remove(image_path)
+                # os.remove(image_path)
+                safe_delete_file(image_path) 
     
     db.session.delete(box)
     db.session.commit()
@@ -202,20 +206,16 @@ def edit_item(item_id):
                 if item.image_path:
                     old_image_path = root_path / 'static'/  item.image_path
                     if os.path.exists(old_image_path):
-                        os.remove(old_image_path)
+                        # os.remove(old_image_path)
+                        safe_delete_file(old_image_path)
                 
                 filename = secure_filename(file.filename)
                 file_path = Path(current_app.config['UPLOAD_FOLDER']) / filename
                 file.save(file_path)
                 file_path = save_image_with_hash(file_path) # Save image with hash and resize
-                # filepath = Path(current_app.config['UPLOAD_FOLDER']) / filename
-                # file.save(filepath)
-                # img = resize_image(filepath)
-                # img.save(filepath) # Overwrite the original image with resized image
-                # # thumbnail = resize_image(filepath, (128, 128))
-                # img.thumbnail((128, 128))
-                # img.save(Path(current_app.config['THUMBNAIL_FOLDER']) / filename)
-                item.image_path = f'uploads/{filename}'
+      
+                item.image_path = f'uploads/{file_path.name}'
+
         
         db.session.commit()
         return redirect(url_for('main.view_box', box_id=item.box_id))
@@ -236,7 +236,8 @@ def delete_item(item_id):
     if not item:
         image_path = Path(current_app.root_path) / 'static' / image_path
         if image_path.exists():
-            image_path.unlink() 
+            # image_path.unlink() 
+            safe_delete_file(image_path)
     flash('Item has been deleted!', 'success')
     return redirect(url_for('main.view_box', box_id=box_id))
 

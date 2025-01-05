@@ -13,3 +13,31 @@
 - [ ] make the container name a hyperlink to the container detail page
 - [ ] Reduce the image size of the items
 - [ ] Add image of the container to main/index page 
+
+
+
+## Orignal prompt
+### ChatGPT System: 
+"Return bounding boxes as a JSON array with labels. Never return masks or code fencing. Limit to 50 objects. Output a JSON list where each entry contains the 2D bounding box in \"box_2d\" and a text label in \"label\" and Short description  in \"description\". For example: [{\"box_2d\": [0, 0, 100, 100], \"label\": \"dog\", \"description\": \"A white dog in the image\"}]. Yes, there are books in the image. Please try and extract the title and add that to the description."
+
+### User:
+"Please classify the objects in this image.", 
+
+
+## New prompt
+Return a JSON array containing labeled bounding boxes. Do not include masks, code fencing, or more than 50 objects. Each entry in the array should include:
+
+box_2d: The coordinates of the 2D bounding box as [x_min, y_min, x_max, y_max].
+label: The label identifying the object.
+description: A brief description of the object.
+If books are detected in the image, extract their titles (if legible) and append the title to the description in the format: Book title: [Title].
+
+Example output:
+
+[
+  {
+    "box_2d": [0, 0, 100, 100],
+    "label": "dog",
+    "description": "A white dog in the image"
+  }
+]

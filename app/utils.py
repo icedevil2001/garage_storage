@@ -168,7 +168,7 @@ def thumbnail_image(image_path, size):
     return image
 
 
-def save_image_with_hash(image_path: Path) -> str:
+def save_image_with_hash(image_path: Path) -> Path:
     """Save an image with a hash of its contents as the filename and resize.
      Returns the new filename.
      """
@@ -262,3 +262,21 @@ def encode_image(image_path: Path) -> str:
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
 
+
+def safe_delete_file(file_path: Path) -> None:
+    """Safely delete a file."""
+
+    file_path = Path(file_path)
+    ## TODO: exclude files and directories should not hard coded here
+    exclude_files = ["Box.png", "Box_with_items.png"]
+    exclude_dir = ["assets"]
+    if file_path.name in exclude_files or file_path.parent.name in exclude_dir:
+        logger.info(f"Skipping deletion of file: {file_path}")
+        return
+    try:
+        file_path.unlink()
+        logger.info(f"Deleted file: {file_path}")
+    except FileNotFoundError:
+        logger.error(f"File not found: {file_path}")
+    except Exception as e:
+        logger.error(f"Error deleting file: {file_path} - {e}")
